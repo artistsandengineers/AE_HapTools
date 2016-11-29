@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace hapavi_cli
 {
@@ -14,12 +15,16 @@ namespace hapavi_cli
 
             Console.WriteLine("Width: " + avi.imageWidth + " Height: " + avi.imageHeight);
 
-            Console.WriteLine("Frame Count: " + avi.frameCount);
+            var s = Stopwatch.StartNew();
 
             for (int i = 0; i < avi.frameCount; i++)
             {
                 var f = avi.getHapFrameAtIndex(i);
             }
+
+            s.Stop();
+
+            Console.WriteLine("Decompressed " + avi.frameCount + " frames in " + s.Elapsed + " seconds.");
 
             Console.ReadLine();
         }

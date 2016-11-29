@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using Snappy;
+
 namespace hapavi_cli
 {
     
@@ -71,6 +73,19 @@ namespace hapavi_cli
         }
 
         public AE_HapAVIParseException(string message) : base(message)
+        {
+
+        }
+    }
+
+    class AE_HapAVICodecException : Exception
+    {
+        public AE_HapAVICodecException()
+        {
+
+        }
+
+        public AE_HapAVICodecException(string message) : base(message)
         {
 
         }
@@ -233,14 +248,23 @@ namespace hapavi_cli
                 throw new IndexOutOfRangeException("Requested frame does not exist.");
             }
 
-            byte[] result = new byte[frameIndex[index].length];
+            byte[] compressed = new byte[frameIndex[index].length];
 
             riffFileStream.Seek(frameIndex[index].position, SeekOrigin.Begin);
-            riffFileStream.Read(result, 0, (int)frameIndex[index].length);
+            riffFileStream.Read(compressed, 0, (int)frameIndex[index].length);
 
-            Console.WriteLine(AE_HapHelpers.readSectionHeader(result).sectionType.ToString());
+            var hapInfo = AE_HapHelpers.readSectionHeader(compressed);
 
-            return result;
+            if (hapInfo.sectionType != AE_HapSectionType.RGB_DXT1_SNAPPY)
+            {
+                throw new AE_HapAVICodecException("Hap section type unsupported: " + hapInfo.sectionType.ToString());
+            }
+
+            byte[] uncompressed = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressed, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
+
+            Snappy.SnappyCodec.Uncompress(compressed, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressed, 0);
+
+            return uncompressed;
 
         }
     }
