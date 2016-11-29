@@ -114,7 +114,7 @@ namespace hapavi_cli
 
             AE_RIFFChunkHeader c;
 
-            while (riffFileStream.Position < startOffset + moviListSize)
+            while (riffFileStream.Position < startOffset + moviListSize - 4) //-4 because the size property of a LIST includes the list subtype...
             {
                 c = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFChunkHeader>(riffFileStream);
 
@@ -201,13 +201,7 @@ namespace hapavi_cli
                 }
 
                 appendFramesToIndex(moviList.size);
-
-                Console.WriteLine("a");
-
             }
-
-            Console.WriteLine(frameIndex.Count);
-
         }
 
 
