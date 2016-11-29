@@ -10,7 +10,7 @@ using Snappy;
 
 namespace hapavi_cli
 {
-    
+
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
     struct AE_RIFFChunkHeader
     {
@@ -47,9 +47,27 @@ namespace hapavi_cli
         public UInt32 reserved3;
     }
 
-    struct AE_HapAVIframeIndexItem{
+    struct AE_HapAVIframeIndexItem
+    {
         public long position;
         public long length;
+    }
+
+    enum AE_SurfaceCompressionType
+    {
+        DXT1 = 0
+    }
+
+    class AE_HapFrame
+    {
+        public AE_SurfaceCompressionType compressionType;
+        public byte[] frameData;
+
+        public AE_HapFrame(AE_SurfaceCompressionType compressionType, byte[] frameData)
+        {
+            this.compressionType = compressionType;
+            this.frameData = frameData;
+        }
     }
 
     class AE_HapAVIFileTypeException : Exception
@@ -241,7 +259,7 @@ namespace hapavi_cli
             }
         }
 
-        public byte[] getHapFrameAtIndex(int index)
+        public AE_HapFrame getHapFrameAtIndex(int index)
         {
             if (index > frameCount - 1)
             {
@@ -264,7 +282,7 @@ namespace hapavi_cli
 
             Snappy.SnappyCodec.Uncompress(compressed, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressed, 0);
 
-            return uncompressed;
+            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressed);
 
         }
     }
