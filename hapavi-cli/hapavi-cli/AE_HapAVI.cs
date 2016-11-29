@@ -225,5 +225,23 @@ namespace hapavi_cli
                 appendFramesToIndex(moviList.size);
             }
         }
+
+        public byte[] getHapFrameAtIndex(int index)
+        {
+            if (index > frameCount - 1)
+            {
+                throw new IndexOutOfRangeException("Requested frame does not exist.");
+            }
+
+            byte[] result = new byte[frameIndex[index].length];
+
+            riffFileStream.Seek(frameIndex[index].position, SeekOrigin.Begin);
+            riffFileStream.Read(result, 0, (int)frameIndex[index].length);
+
+            Console.WriteLine(AE_HapHelpers.readSectionHeader(result).sectionType.ToString());
+
+            return result;
+
+        }
     }
 }

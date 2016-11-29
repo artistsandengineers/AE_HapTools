@@ -16,6 +16,11 @@ namespace hapavi_cli
 
             Console.WriteLine("Frame Count: " + avi.frameCount);
 
+            for (int i = 0; i < avi.frameCount; i++)
+            {
+                var f = avi.getHapFrameAtIndex(i);
+            }
+
             Console.ReadLine();
         }
     }
