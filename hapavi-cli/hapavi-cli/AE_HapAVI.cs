@@ -147,6 +147,8 @@ namespace hapavi_cli
 
         private AE_AVIMainHeader aviMainHeader;
 
+        private byte[] compressedFrameData;
+
         private AE_RIFFListHeader readRIFFHeaderList()
         {
             var listHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
@@ -266,23 +268,26 @@ namespace hapavi_cli
                 throw new IndexOutOfRangeException("Requested frame does not exist.");
             }
 
-            byte[] compressed = new byte[frameIndex[index].length];
+            if (compressedFrameData == null || compressedFrameData.Length < frameIndex[index].length)
+            {
+                compressedFrameData = new byte[frameIndex[index].length];
+            }
 
             riffFileStream.Seek(frameIndex[index].position, SeekOrigin.Begin);
-            riffFileStream.Read(compressed, 0, (int)frameIndex[index].length);
+            riffFileStream.Read(compressedFrameData, 0, (int)frameIndex[index].length);
 
-            var hapInfo = AE_HapHelpers.readSectionHeader(compressed);
+            var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
 
             if (hapInfo.sectionType != AE_HapSectionType.RGB_DXT1_SNAPPY)
             {
                 throw new AE_HapAVICodecException("Hap section type unsupported: " + hapInfo.sectionType.ToString());
             }
 
-            byte[] uncompressed = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressed, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
+            byte[] uncompressedFrameData = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
 
-            Snappy.SnappyCodec.Uncompress(compressed, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressed, 0);
+            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameData, 0);
 
-            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressed);
+            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressedFrameData);
 
         }
     }
