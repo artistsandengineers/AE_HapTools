@@ -76,6 +76,8 @@ namespace hapavi_cli
         private FileStream riffFileStream;
         private BinaryReader riffFileReader;
 
+        private List<long> frameIndex; //We'll store offsets (relative to start of file) of our frames in here, so that we can seek them later.
+
         public uint imageWidth {
             get
             {
@@ -105,6 +107,26 @@ namespace hapavi_cli
             return listHeader;
         }
 
+        //Skims through the filestream looking for chunks in the movi list tagged as compressed video.
+        private void appendFramesToIndex(uint moviListSize)
+        {
+            long startOffset = riffFileStream.Position;
+
+            AE_RIFFChunkHeader c;
+
+            while (riffFileStream.Position < startOffset + moviListSize)
+            {
+                c = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFChunkHeader>(riffFileStream);
+
+                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
+                {
+                    frameIndex.Add(riffFileStream.Position);
+                }
+
+                riffFileStream.Seek(c.size + AE_CopyPastedFromStackOverflow.calculatePad(c.size, 2), SeekOrigin.Current);
+            }
+        }
+
         public AE_HapAVI(string path)
         {
             riffFileStream = new FileStream(path, FileMode.Open);
@@ -131,11 +153,65 @@ namespace hapavi_cli
 
             aviMainHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_AVIMainHeader>(riffFileStream);
 
+            /*So, we want to build an index of where all of the frames are in our video file. Impediments to 
+            doing this "correctly" are many and life is short, so let's do it by brute force. This involves
+            locating 'movi' lists, which contain frame data. There might be more than one because large AVI
+            files are in fact multiple concatenated, RIFFs, sort of... Also let's assume that our AVI only
+            contains a single video stream.*/
+
+            //Find the first 'movi' fourcc:
+            UInt32 fcc = 0;
+            while (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(fcc) != "movi")
+            {
+                fcc = AE_CopyPastedFromStackOverflow.ReadStruct<UInt32>(riffFileStream);
+            }
+
+            //Now seek backwards 12 bytes and read that in again as a list, because we need to know the list size:
+            riffFileStream.Seek(-12, SeekOrigin.Current);
+            var moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+
+            //...start building a frame list:
+            frameIndex = new List<long>();
+
+            appendFramesToIndex(moviList.size);
+
+            //Now let's go looking for frames in subsequent RIFF chunks, if they exist:
+            riffFileStream.Seek(riffHeader.size + Marshal.SizeOf(typeof(AE_RIFFChunkHeader)) + AE_CopyPastedFromStackOverflow.calculatePad(riffHeader.size, 2), SeekOrigin.Begin); //Seek to the end of the first RIFF chunk.
+
+            if (riffFileStream.Position == riffFileStream.Length) //If the end of the first RIFF chunk aligns with the end of the file then we're done.
+            {
+                return;
+            }
+
+            //If we got this far then we're dealing with a 'long' RIFF - i.e. something with at least one AVIX list in it...
+            while (riffFileStream.Position < riffFileStream.Length)
+            {
+                riffHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+
+                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(riffHeader.typeFourCC) != "AVIX")
+                {
+                    throw new AE_HapAVIParseException("Did not find list of type AVIX where we were expecting one.");
+                }
+
+                moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+
+                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(fcc) != "movi")
+                {
+                    throw new AE_HapAVIParseException("Did not find expected movi list.");
+                }
+
+                appendFramesToIndex(moviList.size);
+
+                Console.WriteLine("a");
+
+            }
+
+            Console.WriteLine(frameIndex.Count);
 
         }
 
 
 
-  
+
     }
 }

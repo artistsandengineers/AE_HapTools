@@ -37,5 +37,12 @@ namespace hapavi_cli
 
             return new string(chars);
         }
+
+        //http://stackoverflow.com/questions/11642210/computing-padding-required-for-n-byte-alignment
+        public static long calculatePad(long count, long align)
+        {
+            return (align - (count % align)) % align;
+
+        }
     }
 }

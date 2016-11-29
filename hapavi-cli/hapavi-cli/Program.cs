@@ -10,7 +10,7 @@ namespace hapavi_cli
     {
         static void Main(string[] args)
         {
-            var avi = new AE_HapAVI("c:/Users/arron/Downloads/Master_CB_20161109_01.avi");
+            var avi = new AE_HapAVI("c:/Users/arron/Downloads/long.avi");
 
             Console.WriteLine("Width: " + avi.imageWidth + " Height: " + avi.imageHeight);
 
