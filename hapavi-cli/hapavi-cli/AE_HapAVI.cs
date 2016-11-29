@@ -45,6 +45,11 @@ namespace hapavi_cli
         public UInt32 reserved3;
     }
 
+    struct AE_HapAVIframeIndexItem{
+        public long position;
+        public long length;
+    }
+
     class AE_HapAVIFileTypeException : Exception
     {
         public AE_HapAVIFileTypeException()
@@ -76,7 +81,7 @@ namespace hapavi_cli
         private FileStream riffFileStream;
         private BinaryReader riffFileReader;
 
-        private List<long> frameIndex; //We'll store offsets (relative to start of file) of our frames in here, so that we can seek them later.
+        private List<AE_HapAVIframeIndexItem> frameIndex; //We'll store offsets (relative to start of file) of our frames in here, so that we can seek them later.
 
         public uint imageWidth {
             get
@@ -90,6 +95,20 @@ namespace hapavi_cli
             get
             {
                 return aviMainHeader.height;
+            }
+        }
+
+        public int frameCount
+        {
+            get
+            {
+                if (frameIndex != null)
+                {
+                    return frameIndex.Count;
+                } else
+                {
+                    return 0;
+                }
             }
         }
 
@@ -120,7 +139,10 @@ namespace hapavi_cli
 
                 if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
                 {
-                    frameIndex.Add(riffFileStream.Position);
+                    AE_HapAVIframeIndexItem frameIndexItem;
+                    frameIndexItem.length = c.size;
+                    frameIndexItem.position = riffFileStream.Position;
+                    frameIndex.Add(frameIndexItem);
                 }
 
                 riffFileStream.Seek(c.size + AE_CopyPastedFromStackOverflow.calculatePad(c.size, 2), SeekOrigin.Current);
@@ -171,7 +193,7 @@ namespace hapavi_cli
             var moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
             //...start building a frame list:
-            frameIndex = new List<long>();
+            frameIndex = new List<AE_HapAVIframeIndexItem>();
 
             appendFramesToIndex(moviList.size);
 
@@ -203,9 +225,5 @@ namespace hapavi_cli
                 appendFramesToIndex(moviList.size);
             }
         }
-
-
-
-
     }
 }

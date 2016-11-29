@@ -14,6 +14,8 @@ namespace hapavi_cli
 
             Console.WriteLine("Width: " + avi.imageWidth + " Height: " + avi.imageHeight);
 
+            Console.WriteLine("Frame Count: " + avi.frameCount);
+
             Console.ReadLine();
         }
     }
