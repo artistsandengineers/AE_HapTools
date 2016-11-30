@@ -7,28 +7,20 @@ using System.Diagnostics;
 
 using AE_HapTools;
 
-namespace hap2dds
+namespace AE_Hap2DDS
 {
     class Program
     {
         static void Main(string[] args)
         {
-            AE_HapAVI avi = new AE_HapAVI("C:/Users/arron/Downloads/long.avi");
-
-            Console.WriteLine("Width: " + avi.imageWidth + " Height: " + avi.imageHeight);
-
-            var s = Stopwatch.StartNew();
-
-            for (int i = 0; i < avi.frameCount; i++)
+            if (args.Length != 2)
             {
-                var f = avi.getHapFrameAtIndex(i);
+                Console.WriteLine("Usage: hap2dds <input_hap_avi> <output_directory>");
+                Environment.Exit(1);
             }
 
-            s.Stop();
 
-            Console.WriteLine("Read " + avi.frameCount + " frames in " + s.Elapsed);
-
-            Console.ReadLine();
+            
 
         }
     }
