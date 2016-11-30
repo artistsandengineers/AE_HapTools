@@ -25,7 +25,7 @@ namespace AE_HapTools
         }
 
         //https://www.codeproject.com/articles/10613/c-riff-parser
-        public static string FourCCFromUInt32(UInt32 fourcc)
+        public static string fourCC2String(UInt32 fourcc)
         {
             char[] chars = new char[4];
             chars[0] = (char)(fourcc & 0xFF);
@@ -36,11 +36,21 @@ namespace AE_HapTools
             return new string(chars);
         }
 
+        public static int ChunkIdentifierToInt32(string s)
+        {
+            if (s.Length != 4) throw new ArgumentException("Must be a four character string");
+            var bytes = Encoding.UTF8.GetBytes(s);
+            if (bytes.Length != 4) throw new ArgumentException("Must encode to exactly four bytes");
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
         //http://stackoverflow.com/questions/11642210/computing-padding-required-for-n-byte-alignment
         public static long calculatePad(long count, long align)
         {
             return (align - (count % align)) % align;
 
         }
+
+
     }
 }
