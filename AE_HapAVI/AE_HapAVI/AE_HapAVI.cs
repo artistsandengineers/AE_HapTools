@@ -153,7 +153,7 @@ namespace AE_HapTools
         {
             var listHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-            if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(listHeader.listFourCC) != "LIST")
+            if (AE_CopyPastedFromStackOverflow.fourCC2String(listHeader.listFourCC) != "LIST")
             {
                 throw new AE_HapAVIParseException("Did not find LIST where we expected one.");
             }
@@ -172,7 +172,7 @@ namespace AE_HapTools
             {
                 c = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFChunkHeader>(riffFileStream);
 
-                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
+                if (AE_CopyPastedFromStackOverflow.fourCC2String(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
                 {
                     AE_HapAVIframeIndexItem frameIndexItem;
                     frameIndexItem.length = c.size;
@@ -191,19 +191,19 @@ namespace AE_HapTools
 
             var riffHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-            if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(riffHeader.listFourCC) != "RIFF") //minor abuse here, since if this was a true list listFourCC would be "LIST"
+            if (AE_CopyPastedFromStackOverflow.fourCC2String(riffHeader.listFourCC) != "RIFF") //minor abuse here, since if this was a true list listFourCC would be "LIST"
             {
                 throw new AE_HapAVIFileTypeException("Input file does not start with RIFF chunk.");
             }
 
-            if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(riffHeader.typeFourCC) != "AVI ")
+            if (AE_CopyPastedFromStackOverflow.fourCC2String(riffHeader.typeFourCC) != "AVI ")
             {
                 throw new AE_HapAVIFileTypeException("RIFF is not an AVI.");
             }
 
             var headerList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-            if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(headerList.typeFourCC) != "hdrl")
+            if (AE_CopyPastedFromStackOverflow.fourCC2String(headerList.typeFourCC) != "hdrl")
             {
                 throw new AE_HapAVIParseException("Could not read header list (hdrl).");
             }
@@ -218,7 +218,7 @@ namespace AE_HapTools
 
             //Find the first 'movi' fourcc:
             UInt32 fcc = 0;
-            while (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(fcc) != "movi")
+            while (AE_CopyPastedFromStackOverflow.fourCC2String(fcc) != "movi")
             {
                 fcc = AE_CopyPastedFromStackOverflow.ReadStruct<UInt32>(riffFileStream);
             }
@@ -245,14 +245,14 @@ namespace AE_HapTools
             {
                 riffHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(riffHeader.typeFourCC) != "AVIX")
+                if (AE_CopyPastedFromStackOverflow.fourCC2String(riffHeader.typeFourCC) != "AVIX")
                 {
                     throw new AE_HapAVIParseException("Did not find list of type AVIX where we were expecting one.");
                 }
 
                 moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-                if (AE_CopyPastedFromStackOverflow.FourCCFromUInt32(fcc) != "movi")
+                if (AE_CopyPastedFromStackOverflow.fourCC2String(fcc) != "movi")
                 {
                     throw new AE_HapAVIParseException("Did not find expected movi list.");
                 }

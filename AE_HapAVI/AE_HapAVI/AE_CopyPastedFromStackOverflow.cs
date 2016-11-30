@@ -36,12 +36,13 @@ namespace AE_HapTools
             return new string(chars);
         }
 
-        public static int ChunkIdentifierToInt32(string s)
+        //http://stackoverflow.com/questions/19496825/single-quoted-string-to-uint-in-c-sharp
+        public static uint string2FourCC(string s)
         {
             if (s.Length != 4) throw new ArgumentException("Must be a four character string");
             var bytes = Encoding.UTF8.GetBytes(s);
             if (bytes.Length != 4) throw new ArgumentException("Must encode to exactly four bytes");
-            return BitConverter.ToInt32(bytes, 0);
+            return BitConverter.ToUInt32(bytes, 0);
         }
 
         //http://stackoverflow.com/questions/11642210/computing-padding-required-for-n-byte-alignment
