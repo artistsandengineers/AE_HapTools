@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace hapavi_cli
+namespace AE_HapTools
 {
-
-
     public static class AE_CopyPastedFromStackOverflow
     {
 

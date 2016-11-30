@@ -5,13 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace hapavi_cli
+using AE_HapTools;
+
+namespace hap2dds
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var avi = new AE_HapAVI("c:/Users/arron/Downloads/long.avi");
+            AE_HapAVI avi = new AE_HapAVI("C:/Users/arron/Downloads/long.avi");
 
             Console.WriteLine("Width: " + avi.imageWidth + " Height: " + avi.imageHeight);
 
@@ -24,9 +26,10 @@ namespace hapavi_cli
 
             s.Stop();
 
-            Console.WriteLine("Decompressed " + avi.frameCount + " frames in " + s.Elapsed + " seconds.");
+            Console.WriteLine("Read " + avi.frameCount + " frames in " + s.Elapsed);
 
             Console.ReadLine();
+
         }
     }
 }

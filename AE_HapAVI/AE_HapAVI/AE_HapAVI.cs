@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 using Snappy;
 
-namespace hapavi_cli
+namespace AE_HapTools
 {
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
@@ -53,12 +53,12 @@ namespace hapavi_cli
         public long length;
     }
 
-    enum AE_SurfaceCompressionType
+    public enum AE_SurfaceCompressionType
     {
         DXT1 = 0
     }
 
-    class AE_HapFrame
+    public class AE_HapFrame
     {
         public AE_SurfaceCompressionType compressionType;
         public byte[] frameData;
@@ -70,7 +70,7 @@ namespace hapavi_cli
         }
     }
 
-    class AE_HapAVIFileTypeException : Exception
+    public class AE_HapAVIFileTypeException : Exception
     {
         public AE_HapAVIFileTypeException()
         {
@@ -83,7 +83,7 @@ namespace hapavi_cli
         }
     }
 
-    class AE_HapAVIParseException : Exception
+    public class AE_HapAVIParseException : Exception
     {
         public AE_HapAVIParseException()
         {
@@ -96,7 +96,7 @@ namespace hapavi_cli
         }
     }
 
-    class AE_HapAVICodecException : Exception
+    public class AE_HapAVICodecException : Exception
     {
         public AE_HapAVICodecException()
         {
@@ -109,7 +109,7 @@ namespace hapavi_cli
         }
     }
 
-    class AE_HapAVI
+    public class AE_HapAVI
     {
         private FileStream riffFileStream;
         private BinaryReader riffFileReader;

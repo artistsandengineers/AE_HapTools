@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace hapavi_cli
+namespace AE_HapTools
 {
     enum AE_HapSectionType{
         RGB_DXT1_NONE = 0xAB,

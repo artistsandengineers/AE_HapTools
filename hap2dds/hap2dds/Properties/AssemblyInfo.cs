@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("hapavi-cli")]
+[assembly: AssemblyTitle("hap2dds")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("hapavi-cli")]
+[assembly: AssemblyProduct("hap2dds")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4717df75-a29c-498d-a21d-93aeb77fed4c")]
+[assembly: Guid("97328dff-a832-4859-8f17-df4cdbd1a0d8")]
 
 // Version information for an assembly consists of the following four values:
 //
