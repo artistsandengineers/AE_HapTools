@@ -114,6 +114,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AE_HapAVI\AE_HapAVI\AE_HapAVI.csproj">
+      <Project>{29548aa1-d5aa-4810-b025-ef8d687982ac}</Project>
+      <Name>AE_HapAVI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
