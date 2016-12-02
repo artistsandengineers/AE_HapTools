@@ -47,6 +47,9 @@ namespace VVVV.HapTreats.Nodes
         private bool currentFrameChanged = false;
         private AE_HapFrame currentFrame;
 
+        private AE_DDS dds;
+        private byte[] frameData;
+
         private void reset()
         {
             isValid = false;
@@ -62,6 +65,7 @@ namespace VVVV.HapTreats.Nodes
             if (inputFilename[0] == null)
             {
                 reset();
+                return;
             }
 
             avi = new AE_HapAVI(inputFilename[0]);
@@ -73,12 +77,30 @@ namespace VVVV.HapTreats.Nodes
 
             getFrameAtIndex(0);
 
+            dds = new AE_DDS(avi.imageWidth, avi.imageHeight);
+            dds.header.flags = (UInt32)(AE_DDSFlags.CAPS | AE_DDSFlags.HEIGHT | AE_DDSFlags.WIDTH | AE_DDSFlags.PIXELFORMAT | AE_DDSFlags.LINEARSIZE);
+            dds.header.pixelFormat.flags = (UInt32)AE_DDSPixelFormats.FOURCC;
+            dds.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
+            dds.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC("DXT1");
+
+            frameData = new byte[256 + currentFrame.frameData.Length];
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    dds.header.write(writer);
+                }
+                stream.Flush();
+                byte[] bytes = stream.GetBuffer();
+                bytes.CopyTo(frameData, 0);
+            }
+
             isValid = true;
         }
 
         private void getFrameAtIndex(int index)
         {
-            if (!isValid) return;
             if (index > avi.frameCount) return;
 
             currentFrame = avi.getHapFrameAtIndex(index);
@@ -94,40 +116,19 @@ namespace VVVV.HapTreats.Nodes
             if (frameIndex.IsChanged) getFrameAtIndex(frameIndex[0]);
 
         }
-        int current;
+
         public void Update(IPluginIO pin, DX11RenderContext context)
         {
             if (! isValid) return;
-            current++;
-            getFrameAtIndex(current);
             if (!currentFrameChanged) return;
 
             var tex = outputTexture[0][context];
 
             if (tex != null) tex.Dispose();
 
-            AE_DDS dds = new AE_DDS(avi.imageWidth, avi.imageHeight);
-            dds.header.flags = (UInt32)(AE_DDSFlags.CAPS | AE_DDSFlags.HEIGHT | AE_DDSFlags.WIDTH | AE_DDSFlags.PIXELFORMAT | AE_DDSFlags.LINEARSIZE);
-            dds.header.pixelFormat.flags = (UInt32)AE_DDSPixelFormats.FOURCC;
-            dds.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
-            dds.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC("DXT1");
+            currentFrame.frameData.CopyTo(frameData, 256);
 
-            byte[] fd = new byte[256 + currentFrame.frameData.Length];
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(stream))
-                {
-                    dds.header.write(writer);
-                }
-                stream.Flush();
-                byte[] bytes = stream.GetBuffer();
-                bytes.CopyTo(fd, 0);
-            }
-
-            currentFrame.frameData.CopyTo(fd, 256);
-
-            outputTexture[0][context] = DX11Texture2D.FromMemory(context, fd);
+            outputTexture[0][context] = DX11Texture2D.FromMemory(context, frameData);
 
             currentFrameChanged = false;
         }
