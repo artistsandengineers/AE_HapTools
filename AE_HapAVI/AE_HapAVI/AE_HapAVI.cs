@@ -55,7 +55,7 @@ namespace AE_HapTools
 
     public enum AE_SurfaceCompressionType
     {
-        DXT1 = 0
+        DXT1 = 70
     }
 
     public class AE_HapFrame
