@@ -62,7 +62,7 @@ namespace VVVV.HapTreats.Nodes
 
         private void init()
         {
-            if (inputFilename[0] == null)
+            if (inputFilename[0] == null || ! File.Exists(inputFilename[0]))
             {
                 reset();
                 return;
