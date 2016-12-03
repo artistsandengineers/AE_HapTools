@@ -15,7 +15,6 @@ using FeralTic.DX11;
 using FeralTic.DX11.Resources;
 
 using AE_HapTools;
-using AE_Hap2DDS;
 using System.IO;
 
 namespace VVVV.HapTreats.Nodes
@@ -47,7 +46,6 @@ namespace VVVV.HapTreats.Nodes
         private bool currentFrameChanged = false;
         private AE_HapFrame currentFrame;
 
-        private AE_DDS dds;
         private byte[] frameData;
 
         private void reset()
@@ -75,35 +73,17 @@ namespace VVVV.HapTreats.Nodes
 
             outputTexture[0] = new DX11Resource<DX11Texture2D>();
 
-            getFrameAtIndex(0);
-
-            dds = new AE_DDS(avi.imageWidth, avi.imageHeight);
-            dds.header.flags = (UInt32)(AE_DDSFlags.CAPS | AE_DDSFlags.HEIGHT | AE_DDSFlags.WIDTH | AE_DDSFlags.PIXELFORMAT | AE_DDSFlags.LINEARSIZE);
-            dds.header.pixelFormat.flags = (UInt32)AE_DDSPixelFormats.FOURCC;
-            dds.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
-            dds.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC("DXT1");
-
-            frameData = new byte[256 + currentFrame.frameData.Length];
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(stream))
-                {
-                    dds.header.write(writer);
-                }
-                stream.Flush();
-                byte[] bytes = stream.GetBuffer();
-                bytes.CopyTo(frameData, 0);
-            }
-
             isValid = true;
+
+            getFrameAtIndex(0);
         }
 
         private void getFrameAtIndex(int index)
         {
+            if (!isValid) return;
             if (index > avi.frameCount) return;
 
-            currentFrame = avi.getHapFrameAtIndex(index);
+            currentFrame = avi.getHapFrameAndDDSHeaderAtIndex(index);
             currentFrameFormat[0] = (SlimDX.DXGI.Format)currentFrame.compressionType;
 
             currentFrameChanged = true;
@@ -126,9 +106,7 @@ namespace VVVV.HapTreats.Nodes
 
             if (tex != null) tex.Dispose();
 
-            currentFrame.frameData.CopyTo(frameData, 256);
-
-            outputTexture[0][context] = DX11Texture2D.FromMemory(context, frameData);
+            outputTexture[0][context] = DX11Texture2D.FromMemory(context, currentFrame.frameData);
 
             currentFrameChanged = false;
         }

@@ -89,7 +89,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Deploy|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\ikea-installation-media-player\vvvv_45beta34.2_x64\addonpack\haptreats\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\vvvv\vvvv_45beta34.2_x64\packs\haptreats\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -148,7 +148,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AE_DDS.cs" />
     <Compile Include="AE_HapAVIPlayerNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
