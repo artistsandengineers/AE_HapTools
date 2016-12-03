@@ -53,6 +53,9 @@ namespace AE_HapTools
         public long length;
     }
 
+    //This a bit erk, but:
+    //* The values here match the values in the SlimDX format enum, which makes things a little bit easier later.
+    //* The names here match the 4CCs required in a DDS header.
     public enum AE_SurfaceCompressionType
     {
         DXT1 = 70
@@ -149,40 +152,9 @@ namespace AE_HapTools
 
         private byte[] compressedFrameData;
 
-        private AE_RIFFListHeader readRIFFHeaderList()
-        {
-            var listHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+        private byte[] uncompressedFrameDataWithHeader;
 
-            if (AE_CopyPastedFromStackOverflow.fourCC2String(listHeader.listFourCC) != "LIST")
-            {
-                throw new AE_HapAVIParseException("Did not find LIST where we expected one.");
-            }
-
-            return listHeader;
-        }
-
-        //Skims through the filestream looking for chunks in the movi list tagged as compressed video.
-        private void appendFramesToIndex(uint moviListSize)
-        {
-            long startOffset = riffFileStream.Position;
-
-            AE_RIFFChunkHeader c;
-
-            while (riffFileStream.Position < startOffset + moviListSize - 4) //-4 because the size property of a LIST includes the list subtype...
-            {
-                c = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFChunkHeader>(riffFileStream);
-
-                if (AE_CopyPastedFromStackOverflow.fourCC2String(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
-                {
-                    AE_HapAVIframeIndexItem frameIndexItem;
-                    frameIndexItem.length = c.size;
-                    frameIndexItem.position = riffFileStream.Position;
-                    frameIndex.Add(frameIndexItem);
-                }
-
-                riffFileStream.Seek(c.size + AE_CopyPastedFromStackOverflow.calculatePad(c.size, 2), SeekOrigin.Current);
-            }
-        }
+        private AE_DDS ddsHeader;
 
         public AE_HapAVI(string path)
         {
@@ -261,7 +233,67 @@ namespace AE_HapTools
             }
         }
 
+        private AE_RIFFListHeader readRIFFHeaderList()
+        {
+            var listHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+
+            if (AE_CopyPastedFromStackOverflow.fourCC2String(listHeader.listFourCC) != "LIST")
+            {
+                throw new AE_HapAVIParseException("Did not find LIST where we expected one.");
+            }
+
+            return listHeader;
+        }
+
+        //Skims through the filestream looking for chunks in the movi list tagged as compressed video.
+        private void appendFramesToIndex(uint moviListSize)
+        {
+            long startOffset = riffFileStream.Position;
+
+            AE_RIFFChunkHeader c;
+
+            while (riffFileStream.Position < startOffset + moviListSize - 4) //-4 because the size property of a LIST includes the list subtype...
+            {
+                c = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFChunkHeader>(riffFileStream);
+
+                if (AE_CopyPastedFromStackOverflow.fourCC2String(c.fourcc) == "00dc") //The first compressed video stream in an AVI has chunk type 00dc.
+                {
+                    AE_HapAVIframeIndexItem frameIndexItem;
+                    frameIndexItem.length = c.size;
+                    frameIndexItem.position = riffFileStream.Position;
+                    frameIndex.Add(frameIndexItem);
+                }
+
+                riffFileStream.Seek(c.size + AE_CopyPastedFromStackOverflow.calculatePad(c.size, 2), SeekOrigin.Current);
+            }
+        }
+
         public AE_HapFrame getHapFrameAtIndex(int index)
+        {
+            if (index > frameCount - 1)
+            {
+                throw new IndexOutOfRangeException("Requested frame does not exist.");
+            }
+
+            if (compressedFrameData == null || compressedFrameData.Length < frameIndex[index].length)
+            {
+                compressedFrameData = new byte[frameIndex[index].length];
+            }
+
+            riffFileStream.Seek(frameIndex[index].position, SeekOrigin.Begin);
+            riffFileStream.Read(compressedFrameData, 0, (int)frameIndex[index].length);
+
+            var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
+
+            byte[] uncompressedFrameData = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
+
+            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameData, 0);
+
+            return new AE_HapFrame(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType), uncompressedFrameData);
+
+        }
+
+        public AE_HapFrame getHapFrameAndDDSHeaderAtIndex(int index)
         {
             if (index > frameCount - 1)
             {
@@ -283,12 +315,43 @@ namespace AE_HapTools
                 throw new AE_HapAVICodecException("Hap section type unsupported: " + hapInfo.sectionType.ToString());
             }
 
-            byte[] uncompressedFrameData = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
+            if (ddsHeader == null || AE_CopyPastedFromStackOverflow.fourCC2String(ddsHeader.header.pixelFormat.fourCC) != hapInfo.sectionType.ToString())
+            {
+                ddsHeader = new AE_DDS(aviMainHeader.width, aviMainHeader.height);
+                ddsHeader.header.flags = (UInt32)(AE_DDSFlags.CAPS | AE_DDSFlags.HEIGHT | AE_DDSFlags.WIDTH | AE_DDSFlags.PIXELFORMAT | AE_DDSFlags.LINEARSIZE);
+                ddsHeader.header.pixelFormat.flags = (UInt32)AE_DDSPixelFormats.FOURCC;
+                ddsHeader.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
+                ddsHeader.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType).ToString());
 
-            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameData, 0);
+                uncompressedFrameDataWithHeader = new byte[256 + Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)]; //DDS header is 124 bytes + the 'DDS ' fourcc at the front of the file.
 
-            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressedFrameData);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    using (BinaryWriter writer = new BinaryWriter(stream))
+                    {
+                        ddsHeader.header.write(writer);
+                    }
+                    stream.Flush();
+                    byte[] bytes = stream.GetBuffer();
+                    bytes.CopyTo(uncompressedFrameDataWithHeader, 0);
+                }
 
+            }
+
+            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, 256);
+
+            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressedFrameDataWithHeader);
+        }
+
+        private static AE_SurfaceCompressionType SurfaceCompressionTypeFromHapSectionType(AE_HapSectionType sectionType)
+        {
+            switch (sectionType)
+            {
+                case AE_HapSectionType.RGB_DXT1_SNAPPY:
+                    return AE_SurfaceCompressionType.DXT1;
+                default:
+                    throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
+            }
         }
     }
 }
