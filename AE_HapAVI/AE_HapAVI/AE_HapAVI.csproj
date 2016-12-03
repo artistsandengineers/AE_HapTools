@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AE_CopyPastedFromStackOverflow.cs" />
+    <Compile Include="AE_DDS.cs" />
     <Compile Include="AE_HapAVI.cs" />
     <Compile Include="AE_HapHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

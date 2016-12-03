@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using System.IO;
 
-namespace AE_Hap2DDS
+namespace AE_HapTools
 {
     [Flags]
     public enum AE_DDSCaps : UInt32
