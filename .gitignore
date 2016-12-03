@@ -210,3 +210,9 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+AE_HapAVI/AE_HapAVI/Crc32C.NET.xml
+AE_HapAVI/AE_HapAVI/Snappy.NET.xml
+AE_HapAVI/AE_HapAVI/System.Reactive.Core.xml
+AE_HapAVI/AE_HapAVI/System.Reactive.Interfaces.xml
+AE_HapAVI/AE_HapAVI/System.Reactive.Linq.xml
+AE_HapAVI/AE_HapAVI/System.Reactive.PlatformServices.xml
