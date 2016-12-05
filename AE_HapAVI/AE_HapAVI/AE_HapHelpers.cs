@@ -9,7 +9,20 @@ namespace AE_HapTools
     enum AE_HapSectionType{
         RGB_DXT1_NONE = 0xAB,
         RGB_DXT1_SNAPPY = 0xBB,
-        RGB_DXT1_COMPLICATED = 0xCB
+        RGB_DXT1_CONSULT_DECODE_INSTRUCTIONS = 0xCB,
+        RGBA_DXT5_NONE = 0xAE,
+        RGBA_DXT5_SNAPPY = 0xBE,
+        RGBA_DXT_5_CONSULT_DECODE_INSTRUCTIONS = 0xCE,
+        YCoCg_DXT_5_NONE = 0xAF,
+        YCoCg_DXT_5_SNAPPY = 0xBF,
+        YCoCg_DXT_5_CONSULT_DECODE_INSTRUCTIONS = 0xCF,
+        RGBA_BC7_NONE = 0xAC,
+        RGBA_BC7_SNAPPY = 0xBC,
+        RGBA_BC7_CONSULT_DECODE_INSTRUCTIONS = 0xCC,
+        ALPHA_BC4_NONE = 0xA1,
+        ALPHA_BC4_SNAPPY = 0xB1,
+        ALPHA_BC4_CONSULT_DECODE_INSTRUCTIONS = 0xC1,
+        MULTIPLE_IMAGES = 0x0D
     }
 
     struct AE_HapSectionDescriptor
