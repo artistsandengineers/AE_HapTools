@@ -16,6 +16,14 @@ namespace AE_HapTools
     {
         public UInt32 fourcc;
         public UInt32 size;
+
+        public string fourCCString
+        {
+            get
+            {
+                return AE_CopyPastedFromStackOverflow.fourCC2String(fourcc);
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
@@ -24,6 +32,24 @@ namespace AE_HapTools
         public UInt32 listFourCC;
         public UInt32 size;
         public UInt32 typeFourCC;
+
+        public string listFourCCString
+        {
+            get
+            {
+                return AE_CopyPastedFromStackOverflow.fourCC2String(listFourCC);
+            }
+        }
+
+        public string typeFourCCString
+        {
+            get
+            {
+                return AE_CopyPastedFromStackOverflow.fourCC2String(typeFourCC);
+            }
+        }
+
+
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
