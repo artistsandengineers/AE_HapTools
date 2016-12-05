@@ -200,6 +200,7 @@ namespace AE_HapTools
             }
 
             var headerList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
+            var headerListEnd = riffFileStream.Position + headerList.size - 4;
 
             if (AE_CopyPastedFromStackOverflow.fourCC2String(headerList.typeFourCC) != "hdrl")
             {
@@ -208,22 +209,17 @@ namespace AE_HapTools
 
             aviMainHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_AVIMainHeader>(riffFileStream);
 
-            /*So, we want to build an index of where all of the frames are in our video file. Impediments to 
-            doing this "correctly" are many and life is short, so let's do it by brute force. This involves
-            locating 'movi' lists, which contain frame data. There might be more than one because large AVI
-            files are in fact multiple concatenated, RIFFs, sort of... Also let's assume that our AVI only
-            contains a single video stream.*/
+            riffFileStream.Seek(headerListEnd + AE_CopyPastedFromStackOverflow.calculatePad(headerListEnd, 4), SeekOrigin.Begin); //Skip the rest of the header list.
 
-            //Find the first 'movi' fourcc:
-            UInt32 fcc = 0;
-            while (AE_CopyPastedFromStackOverflow.fourCC2String(fcc) != "movi")
+            //Nasty RIFF parsing here - basically we're trying to skip chunks until we encounter the one tagged 'movi'.
+            //Now keep skipping chunks (dragons: by pretending they are lists) until we find our 'movi' chunk:
+            AE_RIFFListHeader moviList;
+
+            while((moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream)).typeFourCCString != "movi")
             {
-                fcc = AE_CopyPastedFromStackOverflow.ReadStruct<UInt32>(riffFileStream);
+                riffFileStream.Seek(moviList.size - 4, SeekOrigin.Current); //-4 because the size property of a RIFF list header doesn't include the type FourCC...
             }
 
-            //Now seek backwards 12 bytes and read that in again as a list, because we need to know the list size:
-            riffFileStream.Seek(-12, SeekOrigin.Current);
-            var moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
             //...start building a frame list:
             frameIndex = new List<AE_HapAVIframeIndexItem>();
@@ -250,7 +246,7 @@ namespace AE_HapTools
 
                 moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
-                if (AE_CopyPastedFromStackOverflow.fourCC2String(fcc) != "movi")
+                if (AE_CopyPastedFromStackOverflow.fourCC2String(moviList.typeFourCC) != "movi")
                 {
                     throw new AE_HapAVIParseException("Did not find expected movi list.");
                 }
