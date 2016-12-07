@@ -220,7 +220,6 @@ namespace AE_HapTools
                 riffFileStream.Seek(moviList.size - 4, SeekOrigin.Current); //-4 because the size property of a RIFF list header doesn't include the type FourCC...
             }
 
-
             //...start building a frame list:
             frameIndex = new List<AE_HapAVIframeIndexItem>();
 
@@ -332,7 +331,19 @@ namespace AE_HapTools
 
             var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
 
-            if (hapInfo.sectionType != AE_HapSectionType.RGB_DXT1_SNAPPY)
+            if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_SNAPPY)
+            {
+
+            } else if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_NONE)
+            {
+                //TODO: Handle no compression case.
+                throw new NotImplementedException();
+            } else if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_CONSULT_DECODE_INSTRUCTIONS)
+            {
+                var hapDecodeInstructions = AE_HapHelpers.readSectionHeader(compressedFrameData, hapInfo.headerLength);
+
+            }
+            else
             {
                 throw new AE_HapAVICodecException("Hap section type unsupported: " + hapInfo.sectionType.ToString());
             }
