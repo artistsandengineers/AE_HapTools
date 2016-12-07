@@ -44,32 +44,32 @@ namespace AE_HapTools
     class AE_HapHelpers
     {
 
-        private static uint read_three_byte_uint(byte[] buffer)
+        private static uint read_three_byte_uint(byte[] buffer, uint offset)
         {
-            return (uint)buffer[0] + ((uint)buffer[1] << 8) + ((uint)buffer[2] << 16);
+            return (uint)buffer[0 + offset] + ((uint)buffer[1 + offset] << 8) + ((uint)buffer[2 + offset] << 16);
         }
 
-        private static uint read_four_byte_uint(byte[] buffer, int offset)
+        private static uint read_four_byte_uint(byte[] buffer, uint offset)
         {
             return (uint)buffer[0 + offset] + ((uint)buffer[1 + offset] << 8) + ((uint)buffer[2 + offset] << 16) + ((uint)buffer[3 + offset] << 24);
         }
 
-        public static AE_HapSectionDescriptor readSectionHeader(byte[] buffer)
+        public static AE_HapSectionDescriptor readSectionHeader(byte[] buffer, uint offset = 0)
         {
             AE_HapSectionDescriptor result;
 
-            result.sectionLength = read_three_byte_uint(buffer);
+            result.sectionLength = read_three_byte_uint(buffer, offset);
 
             if (result.sectionLength == 0)
             {
-                result.sectionLength = read_four_byte_uint(buffer, 4);
+                result.sectionLength = read_four_byte_uint(buffer, offset + 4);
                 result.headerLength = 8;
             } else
             {
                 result.headerLength = 4;
             }
 
-            result.sectionType = (AE_HapSectionType)buffer[3];
+            result.sectionType = (AE_HapSectionType)buffer[offset + 3];
 
             return result;
 
