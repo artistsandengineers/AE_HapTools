@@ -22,7 +22,16 @@ namespace AE_HapTools
         ALPHA_BC4_NONE = 0xA1,
         ALPHA_BC4_SNAPPY = 0xB1,
         ALPHA_BC4_CONSULT_DECODE_INSTRUCTIONS = 0xC1,
-        MULTIPLE_IMAGES = 0x0D
+        MULTIPLE_IMAGES = 0x0D,
+        //This arguably doesn't belong here, but it doesn't collide with the above so it is:
+        DECODE_INSTRUCTION_CONTAINER = 0x01
+    }
+
+    enum AE_HapDecodeInstructionType
+    {
+        DECODE_INSTURCITON_CHUNK_SECOND_STAGE_TABLE = 0x02,
+        DECODE_INSTRUCTION_CHUNK_SIZE_TABLE = 0x03,
+        DECODE_INSTRUCTION_CHUNK_OFFSET_TABLE = 0x04
     }
 
     struct AE_HapSectionDescriptor
