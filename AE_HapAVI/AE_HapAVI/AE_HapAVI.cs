@@ -331,23 +331,6 @@ namespace AE_HapTools
 
             var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
 
-            if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_SNAPPY)
-            {
-
-            } else if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_NONE)
-            {
-                //TODO: Handle no compression case.
-                throw new NotImplementedException();
-            } else if (hapInfo.sectionType == AE_HapSectionType.RGB_DXT1_CONSULT_DECODE_INSTRUCTIONS)
-            {
-                var hapDecodeInstructions = AE_HapHelpers.readSectionHeader(compressedFrameData, hapInfo.headerLength);
-
-            }
-            else
-            {
-                throw new AE_HapAVICodecException("Hap section type unsupported: " + hapInfo.sectionType.ToString());
-            }
-
             if (ddsHeader == null || AE_CopyPastedFromStackOverflow.fourCC2String(ddsHeader.header.pixelFormat.fourCC) != hapInfo.sectionType.ToString())
             {
                 ddsHeader = new AE_DDS(aviMainHeader.width, aviMainHeader.height);
@@ -356,7 +339,7 @@ namespace AE_HapTools
                 ddsHeader.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
                 ddsHeader.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType).ToString());
 
-                uncompressedFrameDataWithHeader = new byte[256 + Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)]; //DDS header is 124 bytes + the 'DDS ' fourcc at the front of the file.
+                uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 8)]; //TODO: This is probably only true of DXT1
 
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -371,20 +354,76 @@ namespace AE_HapTools
 
             }
 
-            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, 256);
+            if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.UNCOMPRESSED)
+            {
+                //TODO: Handle no compression case.
+                throw new NotImplementedException();
+            } else if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.SNAPPY)
+            {
+                Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, 256);
+            }
+            else if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.COMPLEX)
+            {
+                var hapDecodeInstructions = AE_HapHelpers.readSectionHeader(compressedFrameData, hapInfo.headerLength);
 
-            return new AE_HapFrame(AE_SurfaceCompressionType.DXT1, uncompressedFrameDataWithHeader);
+                if (hapDecodeInstructions.sectionType != AE_HapSectionType.DECODE_INSTRUCTION_CONTAINER)
+                {
+                    throw new AE_HapAVICodecException("Did not find expected decode instructions container.");
+                }
+
+                //Build a list of chunks that make up this frame:
+                AE_HapChunkDescriptor[] chunkList = null;
+                uint bytesRead = 0;
+
+                //In theory the decode instruction compressor table and size tables may appear in any order.
+                while (bytesRead < hapDecodeInstructions.sectionLength)
+                {
+                    var s = AE_HapHelpers.readSectionHeader(compressedFrameData, hapInfo.headerLength + hapDecodeInstructions.headerLength + bytesRead);
+
+                    if ((AE_HapDecodeInstructionType)s.sectionType == AE_HapDecodeInstructionType.DECODE_INSTRUCTION_CHUNK_SECOND_STAGE_COMPRESSOR_TABLE)
+                    {
+                        if (chunkList == null) chunkList = new AE_HapChunkDescriptor[s.sectionLength];
+                        for (int i = 0; i < s.sectionLength; i++)
+                        {
+                            chunkList[i].compressorType = (AE_HapSecondStageCompressor)compressedFrameData[hapInfo.headerLength + hapDecodeInstructions.headerLength + s.headerLength + bytesRead + i];
+                        }
+                    }
+                    else if ((AE_HapDecodeInstructionType)s.sectionType == AE_HapDecodeInstructionType.DECODE_INSTRUCTION_CHUNK_SIZE_TABLE)
+                    {
+                        if (chunkList == null) chunkList = new AE_HapChunkDescriptor[s.sectionLength / 4];
+
+                        for (int i = 0; i < s.sectionLength / 4; i++)
+                        {
+                            chunkList[i].size = (uint)BitConverter.ToInt32(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + s.headerLength + bytesRead));
+                        }
+                    }
+
+                    bytesRead += s.headerLength + s.sectionLength;
+                }
+
+                //Now decompress the chunks into a single frame:
+                //TODO: This could be parallelised
+                int decompressedSoFar = 0;
+
+                for (int i = 0; i < chunkList.Count(); i++)
+                {
+                    decompressedSoFar += Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + hapDecodeInstructions.sectionLength), (int)chunkList[i].size, uncompressedFrameDataWithHeader, 256 + decompressedSoFar);
+                }
+            }
+
+            return new AE_HapFrame(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType), uncompressedFrameDataWithHeader);
         }
 
         private static AE_SurfaceCompressionType SurfaceCompressionTypeFromHapSectionType(AE_HapSectionType sectionType)
         {
-            switch (sectionType)
+
+            if (((byte)sectionType & 0x0f) == 0x0b)
             {
-                case AE_HapSectionType.RGB_DXT1_SNAPPY:
-                    return AE_SurfaceCompressionType.DXT1;
-                default:
-                    throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
+                return AE_SurfaceCompressionType.DXT1;
             }
+
+            //We shouldn't get this far...
+            throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
         }
     }
 }

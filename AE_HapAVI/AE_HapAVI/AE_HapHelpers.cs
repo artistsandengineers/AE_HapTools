@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AE_HapTools
 {
-    enum AE_HapSectionType{
+    enum AE_HapSectionType : byte {
         RGB_DXT1_NONE = 0xAB,
         RGB_DXT1_SNAPPY = 0xBB,
         RGB_DXT1_CONSULT_DECODE_INSTRUCTIONS = 0xCB,
@@ -27,9 +27,16 @@ namespace AE_HapTools
         DECODE_INSTRUCTION_CONTAINER = 0x01
     }
 
+    enum AE_HapSecondStageCompressor
+    {
+        UNCOMPRESSED = 0x0A,
+        SNAPPY = 0x0B,
+        COMPLEX = 0x0C
+    }
+
     enum AE_HapDecodeInstructionType
     {
-        DECODE_INSTURCITON_CHUNK_SECOND_STAGE_TABLE = 0x02,
+        DECODE_INSTRUCTION_CHUNK_SECOND_STAGE_COMPRESSOR_TABLE = 0x02,
         DECODE_INSTRUCTION_CHUNK_SIZE_TABLE = 0x03,
         DECODE_INSTRUCTION_CHUNK_OFFSET_TABLE = 0x04
     }
@@ -39,6 +46,12 @@ namespace AE_HapTools
         public UInt32 headerLength;
         public UInt32 sectionLength;
         public AE_HapSectionType sectionType;
+    }
+
+    struct AE_HapChunkDescriptor
+    {
+        public UInt32 size;
+        public AE_HapSecondStageCompressor compressorType;
     }
 
     class AE_HapHelpers
@@ -73,6 +86,21 @@ namespace AE_HapTools
 
             return result;
 
+        }
+
+        public static AE_HapSecondStageCompressor SecondStageCompressorFromSectionType(AE_HapSectionType type)
+        {
+            if (((byte)type & 0xF0) == 0xA0)
+            {
+                return AE_HapSecondStageCompressor.UNCOMPRESSED;
+            } else if (((byte)type & 0xF0) == 0xB0) {
+                return AE_HapSecondStageCompressor.SNAPPY;
+            } else if (((byte)type & 0xF0) == 0xC0)
+            {
+                return AE_HapSecondStageCompressor.COMPLEX;
+            }
+
+            throw new AE_HapAVICodecException("Unknown second stage compressor type.");
         }
     }
 }
