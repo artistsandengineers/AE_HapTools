@@ -84,7 +84,8 @@ namespace AE_HapTools
     //* The names here match the 4CCs required in a DDS header.
     public enum AE_SurfaceCompressionType
     {
-        DXT1 = 70
+        DXT1 = 70, //Hap, 'Hap1', BC1
+        DXT5 = 76, //Hap Alpha, 'Hap5', BC3
     }
 
     public class AE_HapFrame
@@ -339,7 +340,13 @@ namespace AE_HapTools
                 ddsHeader.header.caps = (UInt32)AE_DDSCaps.TEXTURE;
                 ddsHeader.header.pixelFormat.fourCC = AE_CopyPastedFromStackOverflow.string2FourCC(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType).ToString());
 
-                uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 8)]; //TODO: This is probably only true of DXT1
+                if (SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType) == AE_SurfaceCompressionType.DXT1)
+                {
+                    uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 8)];
+                } else
+                {
+                    uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 16)];
+                }
 
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -417,13 +424,15 @@ namespace AE_HapTools
         private static AE_SurfaceCompressionType SurfaceCompressionTypeFromHapSectionType(AE_HapSectionType sectionType)
         {
 
-            if (((byte)sectionType & 0x0f) == 0x0b)
+            switch ((byte)sectionType & 0x0f)
             {
-                return AE_SurfaceCompressionType.DXT1;
+                case 0x0b:
+                    return AE_SurfaceCompressionType.DXT1;
+                case 0x0e:
+                    return AE_SurfaceCompressionType.DXT5;
+                default:
+                    throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
             }
-
-            //We shouldn't get this far...
-            throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
         }
     }
 }
