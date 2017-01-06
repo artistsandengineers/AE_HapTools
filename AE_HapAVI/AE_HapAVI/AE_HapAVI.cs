@@ -330,8 +330,8 @@ namespace AE_HapTools
             riffFileStream.Read(compressedFrameData, 0, (int)frameIndex[index].length);
 
             var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
-
-            if (ddsHeader == null || AE_CopyPastedFromStackOverflow.fourCC2String(ddsHeader.header.pixelFormat.fourCC) != hapInfo.sectionType.ToString())
+            
+            if (ddsHeader == null || AE_CopyPastedFromStackOverflow.fourCC2String(ddsHeader.header.pixelFormat.fourCC) != SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType).ToString())
             {
                 ddsHeader = new AE_DDS(aviMainHeader.width, aviMainHeader.height);
                 ddsHeader.header.flags = (UInt32)(AE_DDSFlags.CAPS | AE_DDSFlags.HEIGHT | AE_DDSFlags.WIDTH | AE_DDSFlags.PIXELFORMAT | AE_DDSFlags.LINEARSIZE);
