@@ -106,7 +106,9 @@ namespace VVVV.HapTreats.Nodes
 
             if (tex != null) tex.Dispose();
 
-            outputTexture[0][context] = DX11Texture2D.FromMemory(context, currentFrame.frameData);
+            SlimDX.Direct3D11.ImageLoadInformation li = SlimDX.Direct3D11.ImageLoadInformation.FromDefaults();
+            li.MipLevels = 1;
+            outputTexture[0][context] = DX11Texture2D.FromMemory(context, currentFrame.frameData, li);
 
             currentFrameChanged = false;
         }
