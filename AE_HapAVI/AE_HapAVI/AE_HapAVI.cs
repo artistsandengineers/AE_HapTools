@@ -426,10 +426,14 @@ namespace AE_HapTools
 
             switch ((byte)sectionType & 0x0f)
             {
-                case 0x0b:
+                case 0x0b: //DXT1/BC1, RGB
                     return AE_SurfaceCompressionType.DXT1;
-                case 0x0e:
+                case 0x0e: //DXT5/BC3, RGBA
                     return AE_SurfaceCompressionType.DXT5;
+                case 0x0f: //DXT5/BC3, Scaled YCoCg
+                    throw new NotImplementedException();
+                case 0x0c: //BC7, RGBA
+                    throw new NotImplementedException();
                 default:
                     throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
             }
