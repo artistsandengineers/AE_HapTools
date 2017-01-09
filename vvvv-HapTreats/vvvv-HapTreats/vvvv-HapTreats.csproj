@@ -148,7 +148,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AE_HapAVIPlayerNode.cs" />
+    <Compile Include="AE_HapAVITextureNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

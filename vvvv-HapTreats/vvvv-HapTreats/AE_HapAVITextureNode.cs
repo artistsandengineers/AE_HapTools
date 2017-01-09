@@ -19,8 +19,8 @@ using System.IO;
 
 namespace VVVV.HapTreats.Nodes
 {
-    [PluginInfo(Name = "HapAVIPlayer", Category = "HapTreats", Version = "1.0", Author = "arron")]
-    public class AE_HapAVIPlayerNode : IPluginEvaluate, IDisposable, IDX11ResourceProvider
+    [PluginInfo(Name = "HapAVITexture", Category = "HapTreats", Version = "1.0", Author = "arron")]
+    public class AE_HapAVITextureNode : IPluginEvaluate, IDisposable, IDX11ResourceProvider
     {
 
         [Input("Filename", StringType = StringType.Filename, IsSingle = true)]
@@ -45,8 +45,6 @@ namespace VVVV.HapTreats.Nodes
         private bool isValid = false;
         private bool currentFrameChanged = false;
         private AE_HapFrame currentFrame;
-
-        private byte[] frameData;
 
         private void reset()
         {
