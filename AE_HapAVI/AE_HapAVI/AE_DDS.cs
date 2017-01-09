@@ -23,7 +23,7 @@ namespace AE_HapTools
         PITCH = 0x00000008,
         PIXELFORMAT = 0x00001000,
         MIPMAPCOUNT = 0x00020000,
-        LINEARSIZE = 0x00080000,
+        LINEARSIZE =  0x00080000,
         DEPTH = 0x00800000
     }
 
@@ -80,6 +80,18 @@ namespace AE_HapTools
         public UInt32 caps3;
         public UInt32 caps4;
         public UInt32 reserved2;
+
+        /// <summary>
+        /// Hackhacksorryhack
+        /// Returns the actual size of the header, in bytes, because the size field doesn't include the magic.
+        /// </summary>
+        public int actualSize
+        {
+            get
+            {
+                return (int)size + System.Runtime.InteropServices.Marshal.SizeOf(magic);
+            }
+        }
 
         public AE_DDSHeader()
         {

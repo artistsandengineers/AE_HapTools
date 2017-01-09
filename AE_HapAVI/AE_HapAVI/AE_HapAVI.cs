@@ -342,10 +342,10 @@ namespace AE_HapTools
 
                 if (SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType) == AE_SurfaceCompressionType.DXT1)
                 {
-                    uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 8)];
+                    uncompressedFrameDataWithHeader = new byte[ddsHeader.header.actualSize + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 8)];
                 } else
                 {
-                    uncompressedFrameDataWithHeader = new byte[256 + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 16)];
+                    uncompressedFrameDataWithHeader = new byte[ddsHeader.header.actualSize + (((aviMainHeader.width + 3) / 4) * ((aviMainHeader.height + 3) / 4) * 16)];
                 }
 
                 using (MemoryStream stream = new MemoryStream())
@@ -367,7 +367,7 @@ namespace AE_HapTools
                 throw new NotImplementedException();
             } else if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.SNAPPY)
             {
-                Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, 256);
+                Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, ddsHeader.header.actualSize);
             }
             else if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.COMPLEX)
             {
@@ -414,7 +414,7 @@ namespace AE_HapTools
 
                 for (int i = 0; i < chunkList.Count(); i++)
                 {
-                    decompressedSoFar += Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + hapDecodeInstructions.sectionLength), (int)chunkList[i].size, uncompressedFrameDataWithHeader, 256 + decompressedSoFar);
+                    decompressedSoFar += Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + hapDecodeInstructions.sectionLength), (int)chunkList[i].size, uncompressedFrameDataWithHeader, ddsHeader.header.actualSize + decompressedSoFar);
                 }
             }
 
