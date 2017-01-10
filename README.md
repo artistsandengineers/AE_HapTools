@@ -12,8 +12,15 @@ Tools for working AVI files containing [Hap](https://github.com/Vidvox/hap) vide
 
 #Limitations
 * No support for AVI audio.
-* Only supports DXT1/BC1 frame encoding (no Hap Alpha, Hap Q, Hap Q Alpha, Hap Alpha-Only), though this will be fixed soonish.
+* No support for HapQ/HapQ Alpha.
 * Only supports AVIs containing a single video stream.
+
+#Credits:
+Thanks to:
+* [Will Young](http://echoandreflection.co.uk)
+* [Elliot Woods](https://github.com/elliotwoods)
+* [Tebjan Halm](https://github.com/tevjan)
+* [vux](https://github.com/mrvux)
 
 #Open Source
 Uses bits of:
