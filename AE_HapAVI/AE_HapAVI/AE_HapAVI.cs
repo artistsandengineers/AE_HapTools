@@ -142,7 +142,6 @@ namespace AE_HapTools
     public class AE_HapAVI : IDisposable
     {
         private FileStream riffFileStream;
-        private BinaryReader riffFileReader;
 
         private List<AE_HapAVIframeIndexItem> frameIndex; //We'll store offsets (relative to start of file) of our frames in here, so that we can seek them later.
 
