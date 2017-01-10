@@ -85,7 +85,7 @@ namespace AE_HapTools
     public enum AE_SurfaceCompressionType
     {
         DXT1 = 70, //Hap, 'Hap1', BC1
-        DXT5 = 76, //Hap Alpha, 'Hap5', BC3
+        DXT5 = 76 //Hap Alpha, 'Hap5', BC3
     }
 
     public class AE_HapFrame
@@ -376,7 +376,7 @@ namespace AE_HapTools
 
                         for (int i = 0; i < s.sectionLength / 4; i++)
                         {
-                            chunkList[i].size = (uint)BitConverter.ToInt32(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + s.headerLength + bytesRead));
+                            chunkList[i].size = (uint)BitConverter.ToInt32(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + s.headerLength + bytesRead + (i * 4)));
                         }
                     }
 
@@ -385,11 +385,17 @@ namespace AE_HapTools
 
                 //Now decompress the chunks into a single frame:
                 //TODO: This could be parallelised
-                int decompressedSoFar = 0;
+                int compressedFrameDataOffset = (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + hapDecodeInstructions.sectionLength);
+                int decomressedFrameDataOffset = ddsHeader.header.actualSize;
 
                 for (int i = 0; i < chunkList.Count(); i++)
                 {
-                    decompressedSoFar += Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)(hapInfo.headerLength + hapDecodeInstructions.headerLength + hapDecodeInstructions.sectionLength), (int)chunkList[i].size, uncompressedFrameDataWithHeader, ddsHeader.header.actualSize + decompressedSoFar);
+                    decomressedFrameDataOffset += Snappy.SnappyCodec.Uncompress(compressedFrameData,
+                        compressedFrameDataOffset,
+                        (int)chunkList[i].size,
+                        uncompressedFrameDataWithHeader,
+                        decomressedFrameDataOffset);
+                    compressedFrameDataOffset += (int)chunkList[i].size;
                 }
             }
 
