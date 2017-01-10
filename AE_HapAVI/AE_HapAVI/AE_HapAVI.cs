@@ -290,31 +290,6 @@ namespace AE_HapTools
             }
         }
 
-        public AE_HapFrame getHapFrameAtIndex(int index)
-        {
-            if (index > frameCount - 1)
-            {
-                throw new IndexOutOfRangeException("Requested frame does not exist.");
-            }
-
-            if (compressedFrameData == null || compressedFrameData.Length < frameIndex[index].length)
-            {
-                compressedFrameData = new byte[frameIndex[index].length];
-            }
-
-            riffFileStream.Seek(frameIndex[index].position, SeekOrigin.Begin);
-            riffFileStream.Read(compressedFrameData, 0, (int)frameIndex[index].length);
-
-            var hapInfo = AE_HapHelpers.readSectionHeader(compressedFrameData);
-
-            byte[] uncompressedFrameData = new byte[Snappy.SnappyCodec.GetUncompressedLength(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength)];
-
-            Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameData, 0);
-
-            return new AE_HapFrame(SurfaceCompressionTypeFromHapSectionType(hapInfo.sectionType), uncompressedFrameData);
-
-        }
-
         public AE_HapFrame getHapFrameAndDDSHeaderAtIndex(int index)
         {
             if (index > frameCount - 1)
