@@ -186,7 +186,6 @@ namespace AE_HapTools
         public AE_HapAVI(string path)
         {
             riffFileStream = new FileStream(path, FileMode.Open);
-            riffFileReader = new BinaryReader(riffFileStream);
 
             var riffHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream);
 
