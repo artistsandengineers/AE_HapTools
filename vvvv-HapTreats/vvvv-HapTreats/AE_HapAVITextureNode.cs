@@ -19,7 +19,7 @@ using System.IO;
 
 namespace VVVV.HapTreats.Nodes
 {
-    [PluginInfo(Name = "HapAVITexture", Category = "HapTreats", Version = "1.0", Author = "arron")]
+    [PluginInfo(Name = "HapAVITexture", Category = "HapTreats", Version = "1.0", Author = "A&E")]
     public class AE_HapAVITextureNode : IPluginEvaluate, IDisposable, IDX11ResourceProvider
     {
 
