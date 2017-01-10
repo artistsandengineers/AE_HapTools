@@ -139,7 +139,7 @@ namespace AE_HapTools
         }
     }
 
-    public class AE_HapAVI
+    public class AE_HapAVI : IDisposable
     {
         private FileStream riffFileStream;
         private BinaryReader riffFileReader;
@@ -337,8 +337,7 @@ namespace AE_HapTools
 
             if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.UNCOMPRESSED)
             {
-                //TODO: Handle no compression case.
-                throw new NotImplementedException();
+                Array.Copy(compressedFrameData, (int)hapInfo.headerLength, uncompressedFrameDataWithHeader, ddsHeader.header.actualSize, hapInfo.sectionLength);
             } else if (AE_HapHelpers.SecondStageCompressorFromSectionType(hapInfo.sectionType) == AE_HapSecondStageCompressor.SNAPPY)
             {
                 Snappy.SnappyCodec.Uncompress(compressedFrameData, (int)hapInfo.headerLength, (int)hapInfo.sectionLength, uncompressedFrameDataWithHeader, ddsHeader.header.actualSize);
@@ -418,5 +417,16 @@ namespace AE_HapTools
                     throw new AE_HapAVICodecException("Unsupported format: " + sectionType.ToString());
             }
         }
+
+        public void Dispose()
+        {
+            if (riffFileStream != null)
+            {
+                riffFileStream.Close();
+                riffFileStream = null;
+            }
+
+        }
+
     }
 }
