@@ -11,8 +11,10 @@ Tools for working AVI files containing [Hap](https://github.com/Vidvox/hap) vide
 4. For reasons unknown Nuget fails to restore the Snappy packages when AE_HapAVI is built via a VS project reference. Open AE_HapAVI/AE_HapAVI.sln and build it before attempting to build other things. You might need to `Install-Package Snappy.NET` in the Nuget Package Manager Console.
 
 #Limitations
+(all of which are resolvable)
 * No support for AVI audio.
 * No support for HapQ/HapQ Alpha.
+* No parrallelised decompression for chunked second-stage content - chunked frames will still be decoded but offer no performance benefit. 
 * Only supports AVIs containing a single video stream.
 
 #Credits:
