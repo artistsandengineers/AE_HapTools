@@ -5,7 +5,7 @@ Tools for working AVI files containing [Hap](https://github.com/Vidvox/hap) vide
 * AE_HapAVI - a class library on which the above are based.
 
 #Building
-1. `git clone git@bitbucket.org:arronsmith/vvvv-hap.git`
+1. `git clone git@github.com:artistsandengineers/AE_HapTools.git
 2. `cd vvvv-hap`
 3. `git submodule update --init --recursive`
 4. For reasons unknown Nuget fails to restore the Snappy packages when AE_HapAVI is built via a VS project reference. Open AE_HapAVI/AE_HapAVI.sln and build it before attempting to build other things. You might need to `Install-Package Snappy.NET` in the Nuget Package Manager Console.
