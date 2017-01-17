@@ -6,9 +6,11 @@ Tools for working AVI files containing [Hap](https://github.com/Vidvox/hap) vide
 
 #Building
 1. `git clone git@github.com:artistsandengineers/AE_HapTools.git`
-2. `cd vvvv-hap`
+2. `cd AE_HapTools`
 3. `git submodule update --init --recursive`
-4. For reasons unknown Nuget fails to restore the Snappy packages when AE_HapAVI is built via a VS project reference. Open AE_HapAVI/AE_HapAVI.sln and build it before attempting to build other things. You might need to `Install-Package Snappy.NET` in the Nuget Package Manager Console.
+4. `cd ext-libs/dx11-vvvv/FeralTic`
+5. `git pull origin master`
+6. For reasons unknown Nuget fails to restore the Snappy packages when AE_HapAVI is built via a VS project reference. Open AE_HapAVI/AE_HapAVI.sln and build it before attempting to build other things. You might need to `Install-Package Snappy.NET` in the Nuget Package Manager Console.
 
 #Limitations
 (all of which are resolvable)
