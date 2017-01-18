@@ -15,6 +15,7 @@ Tools for working AVI files containing [Hap](https://github.com/Vidvox/hap) vide
 
 #Limitations
 (all of which are resolvable)
+* AVI containers only (i.e. no Quicktime MOV) - if you really can't get AVIs from whatever you're using to generate your content, then `ffmpeg -i <input.mov> -acodec copy -vcodec copy <output.avi>` will re-wrap the video and audio without re-encoding it (i.e. without loss of quality).
 * No support for AVI audio.
 * No support for HapQ/HapQ Alpha.
 * No parrallelised decompression for chunked second-stage content - chunked frames will still be decoded but offer no performance benefit. 
