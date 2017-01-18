@@ -79,9 +79,8 @@ namespace VVVV.HapTreats.Nodes
         private void getFrameAtIndex(int index)
         {
             if (!isValid) return;
-            if (index > avi.frameCount) return;
 
-            currentFrame = avi.getHapFrameAndDDSHeaderAtIndex(index);
+            currentFrame = avi.getHapFrameAndDDSHeaderAtIndex(index % avi.frameCount);
             currentFrameFormat[0] = (SlimDX.DXGI.Format)currentFrame.compressionType;
 
             currentFrameChanged = true;
