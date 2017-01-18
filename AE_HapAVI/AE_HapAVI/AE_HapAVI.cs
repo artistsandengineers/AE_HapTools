@@ -174,6 +174,14 @@ namespace AE_HapTools
             }
         }
 
+        public float frameRate
+        {
+            get
+            {
+                return (1.0f / (float)aviMainHeader.microSecondsPerFrame) * 1000000;
+            }
+        }
+
         private AE_AVIMainHeader aviMainHeader;
 
         private byte[] compressedFrameData;

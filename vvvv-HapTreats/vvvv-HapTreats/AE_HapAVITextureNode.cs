@@ -38,6 +38,9 @@ namespace VVVV.HapTreats.Nodes
         [Output("Size")]
         protected ISpread<Vector2> size;
 
+        [Output("Frame Rate")]
+        protected ISpread<float> frameRate;
+
         [Output("Frame Count")]
         protected ISpread<int> frameCount;
 
@@ -67,6 +70,7 @@ namespace VVVV.HapTreats.Nodes
             avi = new AE_HapAVI(inputFilename[0]);
 
             size[0] = new Vector2(avi.imageWidth, avi.imageHeight);
+            frameRate[0] = avi.frameRate;
             frameCount[0] = avi.frameCount;
 
             outputTexture[0] = new DX11Resource<DX11Texture2D>();
