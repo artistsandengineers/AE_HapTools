@@ -224,7 +224,8 @@ namespace AE_HapTools
 
             while((moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream)).typeFourCCString != "movi")
             {
-                riffFileStream.Seek(moviList.size - 4, SeekOrigin.Current); //-4 because the size property of a RIFF list header doesn't include the type FourCC...
+                if (riffFileStream.Seek(moviList.size - 4, SeekOrigin.Current) > riffFileStream.Length)
+                    throw new AE_HapAVIParseException("Did not find movi list before EOF."); //-4 because the size property of a RIFF list header doesn't include the type FourCC...
             }
 
             //...start building a frame list:
