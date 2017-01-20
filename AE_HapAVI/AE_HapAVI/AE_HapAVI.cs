@@ -216,14 +216,15 @@ namespace AE_HapTools
 
             aviMainHeader = AE_CopyPastedFromStackOverflow.ReadStruct<AE_AVIMainHeader>(riffFileStream);
 
-            riffFileStream.Seek(headerListEnd + AE_CopyPastedFromStackOverflow.calculatePad(headerListEnd, 4), SeekOrigin.Begin); //Skip the rest of the header list.
+            riffFileStream.Seek(headerListEnd, SeekOrigin.Begin); //Skip the rest of the header list.
 
             //Nasty RIFF parsing here - basically we're trying to skip chunks until we encounter the one tagged 'movi'.
             //Now keep skipping chunks (dragons: by pretending they are lists) until we find our 'movi' chunk:
             AE_RIFFListHeader moviList;
-
+            string l = "";
             while((moviList = AE_CopyPastedFromStackOverflow.ReadStruct<AE_RIFFListHeader>(riffFileStream)).typeFourCCString != "movi")
             {
+                l += " " + moviList.typeFourCCString;
                 if (riffFileStream.Seek(moviList.size - 4, SeekOrigin.Current) > riffFileStream.Length)
                     throw new AE_HapAVIParseException("Did not find movi list before EOF."); //-4 because the size property of a RIFF list header doesn't include the type FourCC...
             }
