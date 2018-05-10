@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>vvvv_HapTreats</RootNamespace>
     <AssemblyName>vvvv-HapTreats</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,8 +101,10 @@
   <ItemGroup>
     <Reference Include="FeralTic, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Release\x64\packs\dx11\core\FeralTic.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Debug\x64\packs\dx11\core\FeralTic.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Debug\x64\packs\dx11\core\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition.CodePlex, Version=4.1.2.0, Culture=neutral, PublicKeyToken=13e5ffd4e05db186, processorArchitecture=MSIL">
@@ -135,15 +138,11 @@
       <HintPath>..\packages\VVVV.Core.34.2.0\lib\net40\VVVV.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="VVVV.DX11.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Release\x64\packs\dx11\core\VVVV.DX11.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="VVVV.DX11.Core">
+      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Debug\x64\packs\dx11\core\VVVV.DX11.Core.dll</HintPath>
     </Reference>
-    <Reference Include="VVVV.DX11.Lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Release\x64\packs\dx11\core\VVVV.DX11.Lib.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="VVVV.DX11.Lib">
+      <HintPath>..\..\ext-libs\dx11-vvvv\Deploy\Debug\x64\packs\dx11\core\VVVV.DX11.Lib.dll</HintPath>
     </Reference>
     <Reference Include="VVVV.Utils, Version=34.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VVVV.Utils.34.2.0\lib\net40\VVVV.Utils.dll</HintPath>

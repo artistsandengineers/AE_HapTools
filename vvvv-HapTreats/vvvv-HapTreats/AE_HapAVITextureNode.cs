@@ -20,7 +20,7 @@ using System.IO;
 namespace VVVV.HapTreats.Nodes
 {
     [PluginInfo(Name = "HapAVITexture", Category = "DX11.Texture2d", Version = "1.0", Author = "A&E")]
-    public class AE_HapAVITextureNode : IPluginEvaluate, IDisposable, IDX11ResourceProvider
+    public class AE_HapAVITextureNode : IPluginEvaluate, IDisposable, IDX11ResourceHost
     {
 
         [Input("Filename", StringType = StringType.Filename, IsSingle = true)]
@@ -98,9 +98,14 @@ namespace VVVV.HapTreats.Nodes
 
         }
 
-        public void Update(IPluginIO pin, DX11RenderContext context)
+        public void Dispose()
         {
-            if (! isValid) return;
+            if (outputTexture[0] != null) outputTexture[0].Dispose();
+        }
+
+        public void Update(DX11RenderContext context)
+        {
+            if (!isValid) return;
             if (!currentFrameChanged) return;
 
             var tex = outputTexture[0][context];
@@ -114,14 +119,9 @@ namespace VVVV.HapTreats.Nodes
             currentFrameChanged = false;
         }
 
-        public void Destroy(IPluginIO pin, DX11RenderContext context, bool force)
+        public void Destroy(DX11RenderContext context, bool force)
         {
             if (outputTexture[0] != null) outputTexture[0].Dispose();
-        }
-
-        public void Dispose()
-        {
-
         }
     }
 }
