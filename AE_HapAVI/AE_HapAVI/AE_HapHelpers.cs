@@ -57,14 +57,33 @@ namespace AE_HapTools
     class AE_HapHelpers
     {
 
-        private static uint read_three_byte_uint(byte[] buffer, uint offset)
+        public static uint read_three_byte_uint(byte[] buffer, uint offset)
         {
             return (uint)buffer[0 + offset] + ((uint)buffer[1 + offset] << 8) + ((uint)buffer[2 + offset] << 16);
         }
 
-        private static uint read_four_byte_uint(byte[] buffer, uint offset)
+        public static uint read_four_byte_uint(byte[] buffer, uint offset)
         {
             return (uint)buffer[0 + offset] + ((uint)buffer[1 + offset] << 8) + ((uint)buffer[2 + offset] << 16) + ((uint)buffer[3 + offset] << 24);
+        }
+
+        public static byte[] write_three_byte_uint( UInt32 value)
+        {
+            var buffer = new byte[3];
+            buffer[0] = (byte)(value & 0xFF);
+            buffer[1] = (byte)((value >> 8) & 0xFF);
+            buffer[2] = (byte)((value >> 16) & 0xFF); 
+            return buffer;
+        }
+
+        public static byte[] write_four_byte_int(UInt32 value)
+        {
+            var buffer = new byte[4];
+            buffer[0] = (byte)(value & 0xFF);
+            buffer[1] = (byte)((value >> 8) & 0xFF);
+            buffer[2] = (byte)((value >> 16) & 0xFF);
+            buffer[3] = (byte)((value >> 24) & 0xFF);
+            return buffer;
         }
 
         public static AE_HapSectionDescriptor readSectionHeader(byte[] buffer, uint offset = 0)

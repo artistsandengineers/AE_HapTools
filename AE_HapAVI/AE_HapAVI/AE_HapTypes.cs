@@ -83,8 +83,55 @@ namespace AE_HapTools
         DXT1 = 70, //Hap, 'Hap1', BC1
         DXT5 = 76 //Hap Alpha, 'Hap5', BC3
     }
-    class AE_HapTypes
-    {
 
+    public class AE_HapAVIFileTypeException : Exception
+    {
+        public AE_HapAVIFileTypeException()
+        {
+
+        }
+
+        public AE_HapAVIFileTypeException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class AE_HapAVIParseException : Exception
+    {
+        public AE_HapAVIParseException()
+        {
+
+        }
+
+        public AE_HapAVIParseException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class AE_HapAVICodecException : Exception
+    {
+        public AE_HapAVICodecException()
+        {
+
+        }
+
+        public AE_HapAVICodecException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class AE_HapFrame
+    {
+        public AE_SurfaceCompressionType compressionType;
+        public byte[] frameData;
+
+        public AE_HapFrame(AE_SurfaceCompressionType compressionType, byte[] frameData)
+        {
+            this.compressionType = compressionType;
+            this.frameData = frameData;
+        }
     }
 }

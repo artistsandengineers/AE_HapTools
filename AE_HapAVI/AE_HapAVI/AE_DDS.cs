@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 using System.IO;
 
@@ -36,6 +37,40 @@ namespace AE_HapTools
         RGB = 0x00000040,
         YUV = 0x00000200,
         LUMA = 0x00020000
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+
+    public struct AE_DDSPixelFormatStruct
+    {
+        public UInt32 size;
+        public UInt32 flags;
+        public UInt32 fourCC;
+        public UInt32 RGBBitCount;
+        public UInt32 RBitMask;
+        public UInt32 GBitMask;
+        public UInt32 BBitMask;
+        public UInt32 ABitMask;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    unsafe public struct AE_DDSHeaderStruct
+    {
+        public UInt32 magic;
+        public UInt32 size;
+        public UInt32 flags;
+        public UInt32 height;
+        public UInt32 width;
+        public UInt32 pitchOrLinearSize;
+        public UInt32 Depth;
+        public UInt32 mipMapCount;
+        public fixed UInt32 reserved1[11];
+        public AE_DDSPixelFormatStruct pixelFormat;
+        public UInt32 caps;
+        public UInt32 caps2;
+        public UInt32 caps3;
+        public UInt32 caps4;
+        public UInt32 reserved2;
     }
 
     public class AE_DDSPixelFormat

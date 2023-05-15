@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33214.272
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hap2dds", "hap2dds\hap2dds.csproj", "{97328DFF-A832-4859-8F17-DF4CDBD1A0D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AE_HapAVI", "..\AE_HapAVI\AE_HapAVI\AE_HapAVI.csproj", "{29548AA1-D5AA-4810-B025-EF8D687982AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dds2hap", "dds2hap\dds2hap.csproj", "{8BCAB1D3-0B92-4D44-B941-3E1346635913}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,8 +33,19 @@ Global
 		{29548AA1-D5AA-4810-B025-EF8D687982AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29548AA1-D5AA-4810-B025-EF8D687982AC}.Release|x64.ActiveCfg = Release|x64
 		{29548AA1-D5AA-4810-B025-EF8D687982AC}.Release|x64.Build.0 = Release|x64
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Debug|x64.Build.0 = Debug|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Release|x64.ActiveCfg = Release|Any CPU
+		{8BCAB1D3-0B92-4D44-B941-3E1346635913}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B67D888-08C8-4792-8B73-AF1BA178617A}
 	EndGlobalSection
 EndGlobal

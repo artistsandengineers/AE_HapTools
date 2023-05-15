@@ -20,7 +20,7 @@ namespace AE_Hap2DDS
                 Environment.Exit(1);
             }
 
-            var avi = new AE_HapAVI(args[0]);
+            var avi = new AE_HapAVIReader(args[0]);
             var outputPath = args[1];
 
             Console.WriteLine("AVI has " + avi.frameCount + " frames.");
