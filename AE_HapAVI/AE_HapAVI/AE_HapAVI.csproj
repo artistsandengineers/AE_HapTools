@@ -86,6 +86,7 @@
     <Compile Include="AE_DDS.cs" />
     <Compile Include="AE_HapAVIReader.cs" />
     <Compile Include="AE_HapHelpers.cs" />
+    <Compile Include="AE_HapTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
