@@ -139,7 +139,7 @@ namespace AE_HapTools
         }
     }
 
-    public class AE_HapAVI : IDisposable
+    public class AE_HapAVIReader : IDisposable
     {
         private FileStream riffFileStream;
 
@@ -190,7 +190,7 @@ namespace AE_HapTools
 
         private AE_DDS ddsHeader;
 
-        public AE_HapAVI(string path)
+        public AE_HapAVIReader(string path)
         {
             riffFileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
 

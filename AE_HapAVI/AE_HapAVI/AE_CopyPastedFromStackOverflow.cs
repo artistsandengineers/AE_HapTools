@@ -24,6 +24,20 @@ namespace AE_HapTools
             return structure;
         }
 
+        //Inspired by https://stackoverflow.com/questions/17338571/writing-bytes-from-a-struct-into-a-file-with-c-sharp not terribly happy about the copy but WHATEVERRRRRRRRRRR
+        public static void WriteStruct<T>(this Stream stream, T structure) where T: struct
+        {
+            var sz = Marshal.SizeOf(typeof(T));
+            IntPtr ptr = Marshal.AllocHGlobal(sz);
+            byte[] bufferToWrite = new byte[sz];
+
+            Marshal.StructureToPtr(structure, ptr, true);
+            Marshal.Copy(ptr, bufferToWrite, 0, sz);
+            Marshal.FreeHGlobal(ptr);
+
+            stream.Write(bufferToWrite, 0, sz);
+        }
+
         //https://www.codeproject.com/articles/10613/c-riff-parser
         public static string fourCC2String(UInt32 fourcc)
         {
