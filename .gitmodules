@@ -1,3 +1,0 @@
-[submodule "dx11-vvvv"]
-	path = "ext-libs/dx11-vvvv"
-	url = git@github.com:mrvux/dx11-vvvv.git
