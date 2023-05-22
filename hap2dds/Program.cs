@@ -48,7 +48,7 @@ namespace AE_Hap2DDS
                     Console.ReadLine();
                     Environment.Exit(2);
                 }
-                Console.Write("\r" + i.ToString() + " of " + avi.frameCount.ToString());
+                //Console.Write("\r" + i.ToString() + " of " + avi.frameCount.ToString());
             }
 
             timer.Stop();
