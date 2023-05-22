@@ -34,6 +34,14 @@ namespace dds2hap
 
             Console.WriteLine("Based on first frame in sequence using resolution " + firstFrameHeader.width + "x" + firstFrameHeader.height + " and pixel format: " + AE_CopyPastedFromStackOverflow.fourCC2String(firstFrameHeader.pixelFormat.fourCC));
 
+            AE_HapAVIWriter writer = new AE_HapAVIWriter(outputAVIPath, firstFrameHeader.width, firstFrameHeader.height);
+
+            foreach (string f in ddsFiles)
+            {
+                var fs = new FileStream(f, FileMode.Open, FileAccess.Read);
+
+            }
+
             Console.ReadLine();
 
         }

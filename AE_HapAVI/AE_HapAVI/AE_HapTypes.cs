@@ -70,6 +70,45 @@ namespace AE_HapTools
         public UInt32 reserved3;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    struct AE_AVIStreamHeader
+    {
+        public UInt32 fourcc;
+        public UInt32 fccHandler;
+        public UInt32 flags;
+        public UInt16 priority;
+        public UInt16 language;
+        public UInt32 initialFrames;
+        public UInt32 scale;
+        public UInt32 rate;
+        public UInt32 start;
+        public UInt32 length;
+        public UInt32 suggestedBufferSize;
+        public UInt32 quality;
+        public UInt32 sampleSize;
+        public UInt32 left;
+        public UInt32 top;
+        public UInt32 right;
+        public UInt32 bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 0)]
+    struct AE_AVIBitmapInfoHeader
+    {
+        public UInt32 size;
+        public UInt32 width;
+        public UInt32 height;
+        public UInt16 planes;
+        public UInt16 bitCount;
+        public UInt32 compression;
+        public UInt32 sizeImage;
+        public UInt32 xPixelsPerMeter;
+        public UInt32 yPixelsPerMeter;
+        public UInt32 clrUsed;
+        public UInt32 clrrImportant;
+    }
+
+
     struct AE_HapAVIframeIndexItem
     {
         public long position;
