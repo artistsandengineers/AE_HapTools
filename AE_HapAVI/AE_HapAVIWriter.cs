@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using IronSnappy;
+
 namespace AE_HapTools
 {
     public class AE_HapAVIWriter : IDisposable
@@ -14,7 +16,7 @@ namespace AE_HapTools
         private AE_RIFFListHeader riffHeader;
         private AE_AVIMainHeader aviMainHeader;
 
-        AE_HapAVIWriter(string path, float frameRate, UInt32 width, UInt32 height)
+        public AE_HapAVIWriter(string path, UInt32 width, UInt32 height, float fps)
         {
             riffFileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
 
@@ -32,7 +34,7 @@ namespace AE_HapTools
 
             //AVI main header
             aviMainHeader.fourcc = AE_CopyPastedFromStackOverflow.string2FourCC("AVI ");
-            aviMainHeader.microSecondsPerFrame = (uint)((1.0f / frameRate) / 1000000);
+            aviMainHeader.microSecondsPerFrame = (uint)((1.0f / fps) / 1000000);
             aviMainHeader.width = width;
             aviMainHeader.height = height;
 
@@ -44,8 +46,8 @@ namespace AE_HapTools
             //AVI Stream header
             var streamHeader = new AE_AVIStreamHeader();
             streamHeader.fourcc = AE_CopyPastedFromStackOverflow.string2FourCC("vids");
-            streamHeader.rate = 30; //dividing rate by scale = fps
-            streamHeader.scale = 1;
+            streamHeader.rate = (uint)fps * 100000; //decoders get the frame rate by dividing rate by scale
+            streamHeader.scale = 100000;
 
             //AVI stream format header (bitmap format)
             var streamFormatHeader = new AE_AVIBitmapInfoHeader();
@@ -101,8 +103,7 @@ namespace AE_HapTools
             ddsFileStream.Read(ddsData, 0, (int)size);
             ddsFileStream.Close();
 
-/*
-            var snappyCompressedDDS = Snappy.SnappyCodec.Compress(ddsData);
+            var snappyCompressedDDS = Snappy.Encode(ddsData);
 
             var recList = new AE_RIFFChunkHeader();
             recList.fourcc = AE_CopyPastedFromStackOverflow.string2FourCC("rec ");
@@ -110,7 +111,6 @@ namespace AE_HapTools
 
             AE_CopyPastedFromStackOverflow.WriteStruct(riffFileStream, riffHeader);
             riffFileStream.Write(snappyCompressedDDS, 0, snappyCompressedDDS.Length);
-            */
         }
         
         public void closeFile()
